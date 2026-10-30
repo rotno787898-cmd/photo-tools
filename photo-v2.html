@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rotno Photo Studio</title>
+<style>
+:root{--bg:#0f0a14;--bg2:#170f1e;--card:#1e1428;--card2:#2a1b38;--ln:#3d2a52;--tx:#fff3f8;--mut:#c4a9d0;--ac:#ff4f8b;--ac2:#ffa03d;--ok:#2ecc8f;--warn:#f5a623;--bad:#ff5d6c}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(900px 500px at 10% -10%,#4a1238 0,transparent 60%),var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;line-height:1.5;padding-bottom:88px}
+a{color:var(--ac)}
+.wrap{max-width:900px;margin:0 auto;padding:12px}
+h1,h2,h3{margin:0 0 8px}
+h2{font-size:18px}h3{font-size:15px}
+.hide{display:none!important}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--ln);border-radius:22px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+.mut{color:var(--mut);font-size:13px}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;background:#120a18;color:var(--tx);border:1px solid var(--ln);border-radius:14px;padding:11px;font-size:15px;font-family:inherit}
+textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;min-height:150px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);border-color:transparent}
+button{border:0;border-radius:99px;padding:12px 18px;font-weight:700;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));cursor:pointer}
+button.sec{background:var(--card2);border:1px solid var(--ln);color:var(--tx)}
+button.ok{background:var(--ok);color:#052}
+button.bad{background:var(--bad)}
+button.sm{padding:7px 10px;font-size:12px}
+button.full{width:100%;margin-top:10px}
+button:disabled{opacity:.5;cursor:not-allowed}
+/* nav */
+.top{position:sticky;top:0;z-index:20;background:rgba(15,10,20,.97);border-bottom:1px solid var(--ln)}
+.top .wrap{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.brand{font-weight:800;font-size:17px;background:linear-gradient(135deg,#ff8fb8,#ffc27a);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:space-around;gap:2px;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:rgba(23,15,30,.98);border-top:1px solid var(--ln)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:transparent;border:1px solid transparent;color:var(--mut);padding:6px 2px;border-radius:14px;white-space:nowrap;font-weight:600;font-size:11px}
+.tab .ic{font-size:20px;line-height:1}
+.tab.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.tab.adm{border-color:#d9a441;color:#ffd27a}
+.tab.adm.on{color:#fff}
+.seg{display:flex;gap:6px;background:var(--card);border:1px solid var(--ln);border-radius:99px;padding:4px;margin-bottom:12px}
+.seg button{flex:1;background:transparent;color:var(--mut);padding:10px 6px;font-size:13px}
+.seg button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.pvcard{padding:8px}
+#gv{width:100%;max-height:60vh;object-fit:contain;display:block;border-radius:16px;background:#000}
+#outImg{width:100%;border-radius:16px;display:block;background:#000}
+input[type=range]{padding:0;height:30px;accent-color:var(--ac)}
+input[type=color]{padding:2px;height:44px}
+.ticker{background:linear-gradient(90deg,#8a1450,#d9501f);overflow:hidden;white-space:nowrap;padding:7px 0;font-weight:700;font-size:14px}
+.tk{display:inline-block;white-space:nowrap;animation:tkm 18s linear infinite;will-change:transform}
+@keyframes tkm{from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
+input[type=radio]{width:auto}
+.ticker.paused .tk{animation-play-state:paused}
+a.bl{display:inline-block;border-radius:10px;padding:9px 13px;font-weight:700;font-size:13px;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));text-decoration:none}
+.wa{position:fixed;right:14px;bottom:96px;z-index:40;background:#25d366;color:#04371b;font-weight:800;text-decoration:none;padding:12px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(0,0,0,.45);font-size:14px}
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.4px}
+.b-free{background:#3a2548;color:#ffc7dd}.b-pro{background:linear-gradient(135deg,#ffcf5c,#ff9d3d);color:#3a2300}
+.b-pending{background:#4a3a10;color:#ffd27a}.b-approved{background:#0f3d2c;color:#6af0b8}.b-rejected{background:#4a1520;color:#ff9aa5}
+.demo{background:#3a2a05;color:#ffd27a;font-size:12px;text-align:center;padding:6px}
+/* hero */
+.hero{padding:26px 6px 10px;text-align:center}
+.hero h1{font-size:28px;line-height:1.25;background:linear-gradient(135deg,#fff,#ffc4d9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--mut);max-width:560px;margin:10px auto}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.plans{grid-template-columns:1fr}}
+.plan{border:1px solid var(--ln);border-radius:14px;padding:12px;background:var(--bg2)}
+.plan.pro{border-color:#d9a441;box-shadow:0 0 0 1px #d9a44155 inset}
+.plan ul{margin:8px 0 0;padding-left:18px;color:var(--mut);font-size:13px}
+.price{font-size:24px;font-weight:800}
+/* tool */
+#stage{position:relative;background:#000;border-radius:12px;overflow:hidden;margin:0 auto}
+#pv{position:absolute;left:0;top:0;border:0;transform-origin:0 0;background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#bar{height:10px;background:#120a18;border-radius:6px;overflow:hidden;margin-top:10px}
+#fill{height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+#st{font-size:13px;color:var(--mut);margin-top:8px;white-space:pre-line}
+video{width:100%;border-radius:12px;background:#000;display:block}
+/* tables */
+.item{border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px;background:var(--bg2)}
+.item .meta{font-size:12px;color:var(--mut)}
+.pre{white-space:pre-wrap;word-break:break-word;font-size:14px}
+.codebox{background:#120a18;border:1px dashed var(--ln);border-radius:10px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;white-space:pre-wrap;max-height:260px;overflow:auto}
+.bk{font-size:22px;font-weight:800;letter-spacing:1px;color:#ff6fa3}
+/* modal + toast */
+#modalBg{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+#modal{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px;max-width:420px;width:100%}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#3a1f4d;border:1px solid var(--ln);padding:10px 16px;border-radius:12px;z-index:60;max-width:90%;font-size:14px}
+</style>
+</head>
+<body>
+<div id="ticker" class="ticker hide"><div class="tk" id="tkText"></div></div>
+<div id="demoBar" class="demo hide">⚠ ডেমো মোড: Firebase সেটআপ হয়নি। ডেটা শুধু এই ব্রাউজারে সেভ হচ্ছে। (সেটআপ গাইড দেখুন)</div>
+
+<!-- ============ LOGGED OUT ============ -->
+<div id="authView" class="hide">
+  <div class="wrap">
+    <div class="row" style="padding:6px 0"><span class="brand" data-brand></span></div>
+    <div class="hero">
+      <h1>প্রিমিয়াম 4K ব্যাকগ্রাউন্ড<br>এক ক্লিকে বানান</h1>
+      <p>নিয়ন, অরোরা, গ্রেডিয়েন্ট, জিওমেট্রিক — ডজনখানেক স্টাইলে 4K থেকে 8K ব্যাকগ্রাউন্ড ছবি। ফোনেই, কোনো সফটওয়্যার ছাড়া।</p>
+    </div>
+    <div class="card">
+      <div class="plans" id="plansPublic"></div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:6px">
+        <button class="sec sm" id="tabLogin">লগইন</button><button class="sec sm" id="tabSignup">নতুন অ্যাকাউন্ট</button>
+      </div>
+      <div id="nameRow" class="hide"><label>আপনার নাম</label><input id="aName" autocomplete="name"></div>
+      <label>ইমেইল</label><input id="aEmail" type="email" autocomplete="email" inputmode="email">
+      <label>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label><input id="aPass" type="password" autocomplete="current-password">
+      <button class="full" id="aGo">লগইন করুন</button>
+      <div class="row" style="margin-top:8px"><button class="sec sm" id="aForgot">পাসওয়ার্ড ভুলে গেছেন?</button></div>
+      <div id="aMsg" class="mut" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOGGED IN ============ -->
+<div id="appView" class="hide">
+  <div class="top">
+    <div class="wrap">
+      <span class="brand" data-brand></span>
+      <span class="grow"></span>
+      <span id="planBadge" class="badge b-free">FREE</span>
+      <button class="sec sm" id="logout">বের হন</button>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="tool"><span class="ic">🎨</span>স্টুডিও</button>
+      <button class="tab" data-tab="guide"><span class="ic">📘</span>প্রমট নিয়ম</button>
+      <button class="tab" data-tab="tools"><span class="ic">🧰</span>আরও টুলস</button>
+      <button class="tab" data-tab="plan"><span class="ic">⭐</span>প্ল্যান</button>
+      <button class="tab adm hide" data-tab="admin" id="tabAdmin"><span class="ic">🛠</span>অ্যাডমিন</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div id="notice" class="card hide" style="border-color:#d9a441"></div>
+
+    <!-- TOOL -->
+    <section id="p-tool">
+      <div class="seg"><button class="on" data-mode="gen">🎨 জেনারেটর</button><button data-mode="html">&lt;/&gt; HTML → ছবি</button></div>
+
+      <div id="m-gen">
+        <div class="card pvcard"><canvas id="gv"></canvas></div>
+        <div class="card">
+          <div class="grid2">
+            <div><label>স্টাইল</label><select id="gStyle"></select></div>
+            <div><label>রঙের প্যালেট</label><select id="gPal"></select></div>
+          </div>
+          <div id="cust" class="grid2 hide" style="margin-top:6px">
+            <div><label>ব্যাকগ্রাউন্ড রঙ</label><input type="color" id="cBg" value="#0a0614"></div>
+            <div><label>রঙ ১</label><input type="color" id="c1" value="#ff2d95"></div>
+            <div><label>রঙ ২</label><input type="color" id="c2" value="#00e5ff"></div>
+            <div><label>রঙ ৩</label><input type="color" id="c3" value="#7a3cff"></div>
+          </div>
+          <label>জটিলতা (কতগুলো আকার): <b id="vDen"></b></label><input type="range" id="gDen" min="1" max="10" value="5">
+          <label>নরমতা / গ্লো: <b id="vBlur"></b></label><input type="range" id="gBlur" min="0" max="100" value="40">
+          <label>গ্রেইন (রঙের ব্যান্ডিং কমায়): <b id="vGrain"></b></label><input type="range" id="gGrain" min="0" max="100" value="25">
+          <div class="row" style="margin-top:6px"><div class="grow"><label>সিড (একই সংখ্যা = একই ডিজাইন)</label><input type="number" id="gSeed" value="1"></div><button id="dice" style="margin-top:22px">🎲 র‍্যান্ডম</button></div>
+        </div>
+      </div>
+
+      <div id="m-html" class="hide">
+        <div class="card pvcard"><div id="stage"><iframe id="pv" sandbox="allow-scripts allow-same-origin"></iframe></div></div>
+        <div class="card">
+          <label>HTML কোড (যেকোনো AI থেকে পেস্ট করুন)</label>
+          <textarea id="src" spellcheck="false"></textarea>
+          <div class="grid3" style="margin-top:8px">
+            <button class="sec sm" id="upl">📂 ফাইল</button><button class="sec sm" id="sample">নমুনা</button><button class="sec sm" id="clear">মুছুন</button>
+          </div>
+          <input type="file" id="file" accept=".html,.htm,text/html" hidden>
+          <label>গ্রেইন/টেক্সচার যোগ করুন: <b id="vHg">20</b> (ব্যান্ডিং কমায়, ফাইল সাইজ বাড়ায়)</label><input type="range" id="hGrain" min="0" max="100" value="20">
+          <label>কোন সেকেন্ডের ফ্রেম (অ্যানিমেশন থাকলে; নাহলে 0)</label><input type="number" id="tsec" value="0" min="0" max="60" step="0.1">
+          <button class="full" id="load">👁 প্রিভিউ দেখুন</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="grid2">
+          <div><label>সাইজ / রেজোলিউশন</label><select id="fmt"></select></div>
+          <div><label>ফরম্যাট</label><select id="ext"><option value="jpg">JPG (স্টকের জন্য)</option><option value="png">PNG (বড় ফাইল)</option></select></div>
+          <div><label>JPG কোয়ালিটি</label><select id="jq"><option value="1">ম্যাক্স (বড় ফাইল)</option><option value="0.95" selected>হাই</option><option value="0.85">মাঝারি</option></select></div>
+        </div>
+        <div id="usage" class="mut" style="margin-top:8px"></div>
+        <button class="full" id="go">⬇ ছবি তৈরি করুন</button>
+        <div id="st">প্রস্তুত। বড় সাইজে (4K+) তৈরি হতে কয়েক সেকেন্ড লাগতে পারে। Chrome ব্যবহার করুন।</div>
+      </div>
+      <div class="card hide" id="out">
+        <img id="outImg" alt="">
+        <div class="grid2" style="margin-top:8px"><button id="dl">⬇ ডাউনলোড</button><button class="sec" id="share">📱 গ্যালারিতে সেভ / শেয়ার</button></div>
+      </div>
+    </section>
+
+    <!-- GUIDE -->
+    <section id="p-guide" class="hide">
+      <div class="card"><h2>📘 প্রমট বানানোর নিয়ম</h2><div id="guideText" class="pre"></div></div>
+      <div class="card"><h3>🤖 AI-কে দেওয়ার প্রম্পট টেমপ্লেট</h3>
+        <div class="mut" style="margin-bottom:6px">কপি করে যেকোনো AI-তে দিন। THEME অংশে আপনার আইডিয়া লিখুন।</div>
+        <div id="promptBox" class="codebox"></div>
+        <button class="full sec" id="copyPrompt">প্রম্পট কপি করুন</button></div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="p-tools" class="hide">
+      <div class="card"><h2>🧰 আরও টুলস</h2><div class="mut">আমাদের অন্যান্য কাজের টুল। বিস্তারিত দেখুন বা সরাসরি খুলুন।</div></div>
+      <div id="toolsList"></div>
+    </section>
+
+    <!-- PLAN -->
+    <section id="p-plan" class="hide">
+      <div class="card"><h2>আপনার প্ল্যান</h2><div id="myPlan"></div></div>
+      <div class="card"><div class="plans" id="plansApp"></div></div>
+      <div class="card" id="payCard">
+        <h2>⭐ Pro আপগ্রেড (বিকাশ)</h2>
+        <ol class="mut" style="padding-left:18px;margin:6px 0">
+          <li>বিকাশ অ্যাপ থেকে নিচের নম্বরে <b>Send Money</b> করুন।</li>
+          <li>পেমেন্ট শেষে <b>TrxID</b> কপি করুন।</li>
+          <li>নিচের ফর্মে আপনার বিকাশ নম্বর ও TrxID দিয়ে সাবমিট করুন।</li>
+          <li>যাচাই হলে আপনার অ্যাকাউন্ট Pro হয়ে যাবে।</li>
+        </ol>
+        <div class="mut" style="margin-top:8px">প্ল্যান বেছে নিন</div><div id="planPick"></div>
+        <div class="item"><div class="mut">বিকাশ নম্বর</div><div class="row"><span class="bk" id="bkNum"></span><button class="sec sm" id="copyBk">কপি</button></div><div class="mut">পরিমাণ: <b id="bkPrice"></b> / <span id="bkDays"></span> দিন</div></div>
+        <label>আপনার বিকাশ নম্বর (যে নম্বর থেকে পাঠিয়েছেন)</label><input id="pSender" inputmode="numeric" placeholder="01XXXXXXXXX">
+        <label>TrxID</label><input id="pTrx" placeholder="যেমন 8N7A6D5EE7" style="text-transform:uppercase">
+        <button class="full" id="pSend">সাবমিট করুন</button>
+        <div id="pMsg" class="mut" style="margin-top:8px"></div>
+      </div>
+      <div class="card"><h3>আপনার অনুরোধগুলো</h3><div id="myPays" class="mut">—</div></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="p-admin" class="hide">
+      <div class="card">
+        <div class="row">
+          <button class="sec sm" data-at="pays">💳 পেমেন্ট</button><button class="sec sm" data-at="users">👥 ইউজার</button><button class="sec sm" data-at="settings">⚙ সেটিংস</button>
+        </div>
+      </div>
+      <div id="at-pays" class="card"><div class="row"><h3 class="grow">পেমেন্ট অনুরোধ</h3>
+        <select id="payFilter" style="width:auto"><option value="pending">পেন্ডিং</option><option value="approved">অনুমোদিত</option><option value="rejected">বাতিল</option><option value="all">সব</option></select></div>
+        <div id="paySummary" class="item" style="margin-top:8px"></div><div id="payList" class="mut">—</div></div>
+      <div id="at-users" class="card hide"><div class="row"><h3 class="grow">ইউজার</h3><input id="uSearch" placeholder="ইমেইল খুঁজুন" style="width:45%"></div>
+        <select id="uFilter" style="margin-top:8px"><option value="all">সব ইউজার</option><option value="pro">শুধু Pro (সাবস্ক্রাইবার)</option><option value="free">শুধু Free</option></select>
+        <div id="userStats" class="mut" style="margin-top:6px"></div><div id="userList">—</div></div>
+      <div id="at-settings" class="card hide"><h3>সাইট সেটিংস</h3>
+        <label>সাইটের নাম (ব্র্যান্ড)</label><input id="sBrand">
+        <div class="grid2"><div><label>WhatsApp নম্বর</label><input id="sWa"></div><div><label>বিকাশ নম্বর</label><input id="sBkash"></div>
+        <div><label>ফ্রি ট্রায়াল ছবি (720p-র উপরে, 4K সহ)</label><input id="sLimit" type="number"></div></div>
+        <h3 style="margin-top:14px">💎 সাবস্ক্রিপশন প্ল্যান</h3><div class="mut">যত খুশি প্ল্যান যোগ করুন (যেমন ১ মাস, ৩ মাস, ১ বছর)। ইউজার পছন্দের প্ল্যান বেছে নেবে।</div>
+        <div id="planEd"></div><button class="sec sm" id="addPlan" style="margin-top:8px">➕ নতুন প্ল্যান যোগ করুন</button>
+        <h3 style="margin-top:14px">🧰 আরও টুলস (ইউজার "আরও টুলস" ট্যাবে দেখবে)</h3>
+        <div id="toolEd"></div><button class="sec sm" id="addTool" style="margin-top:8px">➕ নতুন টুল যোগ করুন</button>
+        <label>🔔 উপরের চলমান লেখা (বাম থেকে ডানে সরবে; খালি রাখলে বন্ধ)</label><input id="sTicker">
+        <label>ঘোষণা / নোটিশ (খালি রাখলে দেখাবে না)</label><input id="sNotice">
+        <label>"প্রমট বানানোর নিয়ম" লেখা (সবাই দেখবে)</label><textarea id="sGuide" style="font-family:inherit;font-size:14px;min-height:170px"></textarea>
+        <label>AI প্রম্পট টেমপ্লেট (ইউজার কপি করবে)</label><textarea id="sPrompt"></textarea>
+        <button class="full" id="sSave">সেভ করুন</button><div id="sMsg" class="mut" style="margin-top:8px"></div></div>
+    </section>
+  </div>
+</div>
+
+<a id="waBtn" class="wa" target="_blank" rel="noopener">💬 WhatsApp</a>
+<div id="modalBg" class="hide"><div id="modal"></div></div>
+<div id="toast" class="hide"></div>
+
+<script>
+/* =====================================================================
+   CONFIG  — শুধু এই অংশ বদলাবেন
+   ===================================================================== */
+const CONFIG = {
+  ADMIN_EMAIL: "rotnorotno787898@gmail.com",
+  PREFIX: "photo_",                          // এই সাইটের ডেটা আলাদা রাখে (photo_users, photo_payments, photo_settings)
+  ADMIN_UID: "tMGeEMaAZiVQrbK0aF7CSfGFHVl2",
+  ADMIN_EMAILS: ["rotnorotno787898@gmail.com","rotno787898@gmail.com"],          // আপনার অ্যাডমিন ইমেইল (এই ইমেইল দিয়ে সাইনআপ করলে অ্যাডমিন ট্যাব আসবে)
+  FIREBASE: {                                 // Firebase Console → Project settings → Your apps → Web app থেকে কপি করুন
+    apiKey: "AIzaSyD8FSQKfB4yNglJWwpGMpwxIWFf-zeR6Rk",
+    authDomain: "video-creation-71f3a.firebaseapp.com",
+    projectId: "video-creation-71f3a",
+    appId: "1:889263047354:web:a403319ffaaa1a0da0b883"
+  }
+};
+const DEFAULTS = {
+  brand: "Rotno Photo Studio", whatsapp: "01965911606", bkash: "01XXXXXXXXX", price: 199, proDays: 30, free1080Limit: 20, notice: "",
+  ticker: "🎨 স্বাগতম! প্রথম ২০টি ছবি Pro ফিচারসহ ফ্রি — 4K ব্যাকগ্রাউন্ড এক ক্লিকে বানান",
+  tools: [], plans: [{ name: "Pro ১ মাস", price: 199, days: 30, features: "4K, 5K ও 8K ছবি, JPG/PNG, আনলিমিটেড" }],
+  guide: "১) জেনারেটর: স্টাইল (নিয়ন, অরোরা, মেশ গ্রেডিয়েন্ট, বোকে, ওয়েভ, লো-পলি, জিওমেট্রিক, সিনথওয়েভ) ও রঙ বেছে নিন।\n২) জটিলতা, গ্লো ও গ্রেইন স্লাইডারে মনের মতো করুন। 🎲 র‍্যান্ডম চাপলে নতুন নতুন ডিজাইন আসবে। পছন্দের ডিজাইনের সিড নম্বর লিখে রাখলে পরে একই ডিজাইন আবার পাবেন।\n৩) সাইজ বেছে (4K সাধারণত ভালো) JPG বা PNG তে \"ছবি তৈরি করুন\" চাপুন।\n\nHTML → ছবি: যেকোনো AI-র বানানো HTML পেস্ট করে প্রিভিউ দেখুন, তারপর 4K ছবি নামান। বাইরের ছবি/ফন্ট ব্যবহার না করাই ভালো।\n\nস্টকে বেচার টিপস: গ্রেইন ২০-৪০ রাখলে গাঢ় গ্রেডিয়েন্টে ব্যান্ডিং কমে। JPG ব্যবহার করুন। লোগো, ব্র্যান্ড ও অন্যের ডিজাইন মেশাবেন না। AI-সহায়তার নিয়ম প্ল্যাটফর্মের বর্তমান নীতি দেখে নিন।",
+  promptTemplate: "Create ONE self-contained HTML file that draws a beautiful STATIC background image (no animation needed) on a 1920x1080 stage.\n\nRULES (follow strictly):\n1. Use: html,body{margin:0;width:100%;height:100%;overflow:hidden}. Fill the whole screen.\n2. Use only inline CSS, inline SVG and <canvas>. No external images, fonts or files. No text unless I ask. No people, logos, brands or copyrighted characters.\n3. Style: [neon / aurora / mesh gradient / low poly / geometric / bokeh / waves / synthwave]. Rich smooth gradients with layered shapes and fine subtle details. Avoid large flat empty areas so gradients do not show banding. Add soft grain or texture.\n4. It must work as a commercial stock background with some clean empty space for text.\n5. Output only the HTML code, nothing else.\n\nTHEME: [describe your idea here]"
+};
+
+const VCLOCK = "/* Virtual clock: makes any HTML animation deterministic, frame by frame.\n   Injected BEFORE the page's own scripts (both in the phone tool and in render-html.js). */\n(function () {\n  var now = 0, tid = 1, rid = 1, timers = [], rafs = [], seed = 1234567;\n  var base = 1767225600000, D = Date;\n  window.__rafReal = window.requestAnimationFrame.bind(window);\n  Math.random = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };\n  performance.now = function () { return now; };\n  window.Date = class VDate extends D {\n    constructor(...a) { if (a.length === 0) super(base + now); else super(...a); }\n    static now() { return base + now; }\n  };\n  window.setTimeout = function (f, ms) {\n    var a = [].slice.call(arguments, 2), id = tid++;\n    timers.push({ id: id, due: now + (+ms || 0), f: f, a: a, iv: 0 }); return id;\n  };\n  window.setInterval = function (f, ms) {\n    var a = [].slice.call(arguments, 2), id = tid++, iv = Math.max(+ms || 0, 1);\n    timers.push({ id: id, due: now + iv, f: f, a: a, iv: iv }); return id;\n  };\n  window.clearTimeout = window.clearInterval = function (id) { timers = timers.filter(function (t) { return t.id !== id; }); };\n  window.requestAnimationFrame = function (f) { var id = rid++; rafs.push({ id: id, f: f }); return id; };\n  window.cancelAnimationFrame = function (id) { rafs = rafs.filter(function (r) { return r.id !== id; }); };\n  window.__vcAdvance = function (t) {            // t in milliseconds\n    now = t;\n    var guard = 0;\n    while (guard++ < 10000) {\n      var due = timers.filter(function (x) { return x.due <= now; }).sort(function (a, b) { return a.due - b.due; })[0];\n      if (!due) break;\n      if (due.iv) due.due += due.iv; else timers = timers.filter(function (x) { return x !== due; });\n      try { due.f.apply(window, due.a); } catch (e) { console.error(e); }\n    }\n    var list = rafs; rafs = [];\n    list.forEach(function (r) { try { r.f(now); } catch (e) { console.error(e); } });\n    try { document.getAnimations().forEach(function (a) { a.pause(); a.currentTime = now; }); } catch (e) {}\n  };\n})();\n";
+
+/* ===================================================================== helpers */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fd = ms => ms ? new Date(ms).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const DAY = 86400000;
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.remove('hide'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hide'), 3200); }
+function modal(html, onMount) { $('modal').innerHTML = html; $('modalBg').classList.remove('hide'); if (onMount) onMount(); }
+function closeModal() { $('modalBg').classList.add('hide'); }
+$('modalBg').addEventListener('click', e => { if (e.target === $('modalBg')) closeModal(); });
+const ERR = {
+  'auth/email-already-in-use': 'এই ইমেইলে আগেই অ্যাকাউন্ট আছে। লগইন করুন।', 'auth/invalid-credential': 'ইমেইল বা পাসওয়ার্ড ভুল।', 'auth/wrong-password': 'পাসওয়ার্ড ভুল।',
+  'auth/user-not-found': 'এই ইমেইলে অ্যাকাউন্ট নেই।', 'auth/weak-password': 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন।', 'auth/invalid-email': 'ইমেইলটি সঠিক নয়।',
+  'auth/too-many-requests': 'অনেকবার চেষ্টা হয়েছে, কিছুক্ষণ পর আবার করুন।', 'auth/network-request-failed': 'ইন্টারনেট সংযোগ নেই।', 'permission-denied': 'অনুমতি নেই (বা এই TrxID আগে ব্যবহার হয়েছে)।'
+};
+const errMsg = e => ERR[e && (e.code || e.message)] || (e && e.message) || 'কিছু একটা সমস্যা হয়েছে।';
+
+/* ===================================================================== backends */
+function makeDemo() {
+  const g = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+  const s = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  let cb = () => {};
+  const sess = () => g('demo_photo_session', null);
+  return {
+    mode: 'demo',
+    onAuth(c) { cb = c; c(sess()); },
+    async signUp(email, pass, name) {
+      const us = g('demo_photo_accounts', {}); email = email.toLowerCase();
+      if (us[email]) throw { code: 'auth/email-already-in-use' };
+      if (pass.length < 6) throw { code: 'auth/weak-password' };
+      const uid = 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      us[email] = { pass, uid, name }; s('demo_photo_accounts', us);
+      const u = { uid, email, name }; s('demo_photo_session', u); cb(u);
+    },
+    async signIn(email, pass) {
+      const us = g('demo_photo_accounts', {}); email = email.toLowerCase(); const a = us[email];
+      if (!a || a.pass !== pass) throw { code: 'auth/invalid-credential' };
+      const u = { uid: a.uid, email, name: a.name }; s('demo_photo_session', u); cb(u);
+    },
+    async signOut() { localStorage.removeItem('demo_photo_session'); cb(null); },
+    async resetPassword() {},
+    async ensureUser(u) {
+      const all = g('demo_photo_users', {});
+      if (!all[u.uid]) { all[u.uid] = { email: u.email, name: u.name || '', plan: 'free', proUntil: 0, used1080: 0, createdAt: Date.now(), lastLogin: Date.now() }; s('demo_photo_users', all); }
+      return all[u.uid];
+    },
+    async touch(uid) { const all = g('demo_photo_users', {}); if (all[uid]) { all[uid].lastLogin = Date.now(); s('demo_photo_users', all); } },
+    async getUser(uid) { return g('demo_photo_users', {})[uid]; },
+    async bumpUsage(uid, n) { const all = g('demo_photo_users', {}); all[uid].used1080 = n; s('demo_photo_users', all); },
+    async getSettings() { return g('demo_photo_settings', {}); },
+    async saveSettings(o) { s('demo_photo_settings', { ...g('demo_photo_settings', {}), ...o }); },
+    async createPayment(p) {
+      const ps = g('demo_photo_pays', {});
+      if (ps[p.trxId]) throw { code: 'permission-denied' };
+      ps[p.trxId] = { ...p, id: p.trxId, status: 'pending', createdAt: Date.now() }; s('demo_photo_pays', ps);
+    },
+    async myPayments(uid) { return Object.values(g('demo_photo_pays', {})).filter(p => p.uid === uid); },
+    async listPayments(st) { return Object.values(g('demo_photo_pays', {})).filter(p => st === 'all' || p.status === st); },
+    async approvePayment(id, uid, proUntil) {
+      const ps = g('demo_photo_pays', {}); ps[id].status = 'approved'; ps[id].reviewedAt = Date.now(); s('demo_photo_pays', ps);
+      const us = g('demo_photo_users', {}); us[uid].plan = 'pro'; us[uid].proUntil = proUntil; s('demo_photo_users', us);
+    },
+    async rejectPayment(id) { const ps = g('demo_photo_pays', {}); ps[id].status = 'rejected'; ps[id].reviewedAt = Date.now(); s('demo_photo_pays', ps); },
+    async listUsers() { const us = g('demo_photo_users', {}); return Object.keys(us).map(k => ({ uid: k, ...us[k] })); },
+    async updateUser(uid, patch) { const us = g('demo_photo_users', {}); Object.assign(us[uid], patch); s('demo_photo_users', us); }
+  };
+}
+async function makeFirebase(cfg) {
+  const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const [{ initializeApp }, A, F] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+  const PX = CONFIG.PREFIX || '';
+  const app = initializeApp(cfg), auth = A.getAuth(app), db = F.getFirestore(app);
+  const U = uid => F.doc(db, PX + 'users', uid), P = id => F.doc(db, PX + 'payments', id);
+  const rows = s => s.docs.map(d => ({ id: d.id, uid: d.data().uid || d.id, ...d.data() }));
+  return {
+    mode: 'firebase',
+    onAuth(cb) { A.onAuthStateChanged(auth, u => cb(u ? { uid: u.uid, email: u.email, name: u.displayName || '' } : null)); },
+    async signUp(email, pass, name) { const c = await A.createUserWithEmailAndPassword(auth, email, pass); if (name) { try { await A.updateProfile(c.user, { displayName: name }); } catch (e) {} } },
+    async signIn(email, pass) { await A.signInWithEmailAndPassword(auth, email, pass); },
+    signOut() { return A.signOut(auth); },
+    resetPassword(email) { return A.sendPasswordResetEmail(auth, email); },
+    async ensureUser(u) {
+      const r = await F.getDoc(U(u.uid)); if (r.exists()) return r.data();
+      const d = { email: u.email, name: u.name || '', plan: 'free', proUntil: 0, used1080: 0, createdAt: Date.now(), lastLogin: Date.now() };
+      await F.setDoc(U(u.uid), d); return d;
+    },
+    touch(uid) { return F.updateDoc(U(uid), { lastLogin: Date.now() }).catch(() => {}); },
+    async getUser(uid) { const r = await F.getDoc(U(uid)); return r.data(); },
+    bumpUsage(uid, n) { return F.updateDoc(U(uid), { used1080: n }); },
+    async getSettings() { try { const r = await F.getDoc(F.doc(db, PX + 'settings', 'public')); return r.exists() ? r.data() : {}; } catch (e) { return {}; } },
+    saveSettings(o) { return F.setDoc(F.doc(db, PX + 'settings', 'public'), o, { merge: true }); },
+    createPayment(p) { return F.setDoc(P(p.trxId), { uid: p.uid, email: p.email, trxId: p.trxId, sender: p.sender, planName: p.planName, price: p.price, days: p.days, status: 'pending', createdAt: Date.now() }); },
+    async myPayments(uid) { return rows(await F.getDocs(F.query(F.collection(db, PX + 'payments'), F.where('uid', '==', uid)))); },
+    async listPayments(st) { return rows(await F.getDocs(st === 'all' ? F.collection(db, PX + 'payments') : F.query(F.collection(db, PX + 'payments'), F.where('status', '==', st)))); },
+    async approvePayment(id, uid, proUntil) { const b = F.writeBatch(db); b.update(P(id), { status: 'approved', reviewedAt: Date.now() }); b.update(U(uid), { plan: 'pro', proUntil }); await b.commit(); },
+    rejectPayment(id) { return F.updateDoc(P(id), { status: 'rejected', reviewedAt: Date.now() }); },
+    async listUsers() { const s = await F.getDocs(F.collection(db, PX + 'users')); return s.docs.map(d => ({ uid: d.id, ...d.data() })); },
+    updateUser(uid, patch) { return F.updateDoc(U(uid), patch); }
+  };
+}
+
+/* ===================================================================== state */
+const S = { user: null, doc: null, settings: { ...DEFAULTS } };
+let B;
+const isAdmin = () => !!(S.user && (S.user.uid === CONFIG.ADMIN_UID || CONFIG.ADMIN_EMAILS.some(e => e.toLowerCase() === (S.user.email || '').toLowerCase())));
+const effPlan = () => isAdmin() ? 'pro' : (S.doc && S.doc.plan === 'pro' && S.doc.proUntil > Date.now()) ? 'pro' : 'free';
+const tierOf = (W, H) => { const m = Math.min(W, H); return m <= 720 ? 'hd' : m <= 1080 ? 'fhd' : 'pro'; };
+function gate(W, H) {
+  const tier = tierOf(W, H), plan = effPlan(), lim = +S.settings.free1080Limit || 0, used = S.doc.used1080 || 0;
+  if (plan === 'pro' || tier === 'hd') return { ok: true, tier };
+  if (used >= lim) return { ok: false, tier, why: `আপনার ফ্রি ট্রায়ালের ${lim}টি Pro ছবি শেষ হয়ে গেছে। এখন ফ্রিতে শুধু 720p চলবে। 1080p, 1440p ও 4K-র জন্য Pro নিন।` };
+  return { ok: true, tier };
+}
+
+/* ===================================================================== UI: shared */
+function waLink(n) { let d = String(n || '').replace(/\D/g, ''); if (d.startsWith('0')) d = '880' + d.slice(1); return 'https://wa.me/' + d + '?text=' + encodeURIComponent('হ্যালো, ' + S.settings.brand + ' সম্পর্কে জানতে চাই।'); }
+function applyBrand() { $('waBtn').href = waLink(S.settings.whatsapp);
+  const tk = (S.settings.ticker || '').trim(); $('ticker').classList.toggle('hide', !tk); $('tkText').textContent = tk; $('tkText').style.animationDuration = Math.max(10, 8 + tk.length * 0.18) + 's'; document.querySelectorAll('[data-brand]').forEach(e => e.textContent = S.settings.brand); document.title = S.settings.brand; }
+function priceHtml(p) {
+  const o = +p.oldPrice || 0, n = +p.price || 0;
+  return o > n && n >= 0 ? `<s class="mut" style="font-size:.75em;font-weight:400">৳${esc(o)}</s> ৳${esc(n)} <span class="badge b-approved">${Math.round((o - n) / o * 100)}% ছাড়</span>` : `৳${esc(n)}`;
+}
+function payDays(p) { const pl = getPlans().find(x => x.name === p.planName); return pl ? +pl.days : Math.min(+p.days || +getPlans()[0].days || 30, 400); }
+function payWarn(p) { const pl = getPlans().find(x => x.name === p.planName); return pl && +pl.price !== +p.price ? ' ⚠ দাম মেলেনি (প্ল্যানের দাম ৳' + pl.price + ')' : (!pl && p.planName ? ' ⚠ প্ল্যান তালিকায় নেই' : ''); }
+function safeUrl(u) { try { const x = new URL(String(u || ''), location.href); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch (e) { return ''; } }
+function getTools() { return Array.isArray(S.settings.tools) ? S.settings.tools : []; }
+function renderTools() {
+  const t = getTools();
+  $('toolsList').innerHTML = t.length ? t.map((x, i) => `<div class="card"><div class="row"><span style="font-size:30px">${esc(x.icon || '🧰')}</span><div class="grow"><b>${esc(x.name)}</b>${x.tag ? ` <span class="badge b-free">${esc(x.tag)}</span>` : ''}<div class="mut">${esc(x.short || '')}</div></div></div>
+    <div class="row" style="margin-top:10px"><button class="sec sm" data-tinfo="${i}">ℹ বিস্তারিত</button>${safeUrl(x.url) ? `<a class="bl" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener noreferrer">🔗 খুলুন</a>` : ''}</div></div>`).join('') : '<div class="card mut">শীঘ্রই নতুন টুল আসছে।</div>';
+}
+function getPlans() { const a = S.settings.plans; return (Array.isArray(a) && a.length) ? a : DEFAULTS.plans; }
+function plansHtml() {
+  const st = S.settings;
+  return `<div class="plan"><div class="row"><b>Free</b><span class="grow"></span><span class="price">৳০</span></div>
+  <ul><li>🎁 শুরুতে <b>${esc(st.free1080Limit)}টি ছবি</b> Pro-র সব ফিচারসহ (4K সহ)</li><li>তারপর 720p — আনলিমিটেড</li></ul></div>` +
+  getPlans().map(p => `<div class="plan pro"><div class="row"><b>${esc(p.name)} ⭐</b><span class="grow"></span><span class="price">${priceHtml(p)}<span class="mut">/${esc(p.days)} দিন</span></span></div>
+  <ul><li>1080p থেকে <b>8K</b> পর্যন্ত — আনলিমিটেড</li>${p.features ? `<li>${esc(p.features)}</li>` : ''}</ul></div>`).join('');
+}
+function renderHeader() {
+  const pb = $('planBadge'), p = effPlan();
+  pb.textContent = p === 'pro' ? 'PRO' : 'FREE'; pb.className = 'badge ' + (p === 'pro' ? 'b-pro' : 'b-free');
+  $('tabAdmin').classList.toggle('hide', !isAdmin());
+  const n = S.settings.notice; $('notice').classList.toggle('hide', !n); $('notice').textContent = n || '';
+  renderUsage();
+}
+function renderUsage() {
+  const p = effPlan(), lim = +S.settings.free1080Limit || 0;
+  $('usage').innerHTML = p === 'pro'
+    ? (isAdmin() ? '🛠 অ্যাডমিন: সব সাইজ আনলিমিটেড' : `✅ Pro: সব সাইজ আনলিমিটেড (মেয়াদ ${fd(S.doc.proUntil)} পর্যন্ত)`)
+    : ((S.doc.used1080 || 0) < lim ? `🎁 ফ্রি ট্রায়াল: Pro-র সব ফিচার (4K সহ) • বাকি <b>${lim - (S.doc.used1080 || 0)}/${lim}</b>টি ছবি • 720p সবসময় ফ্রি` : `ট্রায়াল শেষ। ফ্রি: শুধু 720p আনলিমিটেড • 1080p/1440p/4K = 🔒 Pro`);
+  [...$('fmt').options].forEach(o => {
+    const [W, H] = o.value.split(',').map(Number), t = tierOf(W, H), base = o.dataset.label;
+    const left = (+S.settings.free1080Limit || 0) - (S.doc.used1080 || 0); o.textContent = base + (t === 'hd' ? ' (ফ্রি)' : p === 'pro' ? '' : left > 0 ? ' (ট্রায়াল)' : ' 🔒 Pro');
+  });
+}
+function renderPlanTab() {
+  const p = effPlan(), st = S.settings, d = S.doc;
+  $('myPlan').innerHTML = p === 'pro'
+    ? isAdmin() ? '<span class="badge b-pro">ADMIN</span> সব আনলিমিটেড' : `<span class="badge b-pro">PRO</span> মেয়াদ: <b>${fd(d.proUntil)}</b> (${Math.max(0, Math.ceil((d.proUntil - Date.now()) / DAY))} দিন বাকি)`
+    : `<span class="badge b-free">FREE</span> ${d.plan === 'pro' ? '<span class="mut">(Pro মেয়াদ শেষ হয়েছে)</span>' : ''}<div class="mut">ট্রায়াল ব্যবহার: ${d.used1080 || 0}/${esc(st.free1080Limit)}</div>`;
+  $('plansApp').innerHTML = plansHtml();
+  renderPlanPick();
+  loadMyPays();
+}
+async function loadMyPays() {
+  try {
+    const ps = (await B.myPayments(S.user.uid)).sort((a, b) => b.createdAt - a.createdAt);
+    const lab = { pending: 'যাচাই চলছে', approved: 'অনুমোদিত ✅', rejected: 'বাতিল ❌' };
+    $('myPays').innerHTML = ps.length ? ps.map(p => `<div class="item"><span class="badge b-${p.status}">${lab[p.status]}</span> <b>${esc(p.trxId)}</b><div class="meta">${esc(p.sender)} • ${fd(p.createdAt)}</div></div>`).join('') : 'কোনো অনুরোধ নেই।';
+  } catch (e) { $('myPays').textContent = errMsg(e); }
+}
+function renderGuide() { $('guideText').textContent = S.settings.guide; $('promptBox').textContent = S.settings.promptTemplate; }
+function showTab(t) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  ['tool', 'guide', 'tools', 'plan', 'admin'].forEach(k => $('p-' + k).classList.toggle('hide', k !== t));
+  if (t === 'tool') toolShown(); if (t === 'guide') renderGuide(); if (t === 'tools') renderTools(); if (t === 'plan') renderPlanTab(); if (t === 'admin') adminTab(curAdminTab);
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+/* ===================================================================== auth */
+let signupMode = false;
+function setAuthMode(m) { signupMode = m; $('nameRow').classList.toggle('hide', !m); $('aGo').textContent = m ? 'অ্যাকাউন্ট খুলুন' : 'লগইন করুন'; $('tabLogin').style.outline = m ? '' : '2px solid var(--ac)'; $('tabSignup').style.outline = m ? '2px solid var(--ac)' : ''; $('aMsg').textContent = ''; }
+$('tabLogin').onclick = () => setAuthMode(false); $('tabSignup').onclick = () => setAuthMode(true);
+$('aGo').onclick = async () => {
+  const email = $('aEmail').value.trim(), pass = $('aPass').value, name = $('aName').value.trim();
+  if (!email || !pass) { $('aMsg').textContent = 'ইমেইল ও পাসওয়ার্ড দিন।'; return; }
+  $('aGo').disabled = true; $('aMsg').textContent = '⏳ অপেক্ষা করুন...';
+  try { signupMode ? await B.signUp(email, pass, name) : await B.signIn(email, pass); $('aMsg').textContent = ''; }
+  catch (e) { $('aMsg').textContent = '❌ ' + errMsg(e); }
+  $('aGo').disabled = false;
+};
+$('aForgot').onclick = async () => {
+  const email = $('aEmail').value.trim(); if (!email) { $('aMsg').textContent = 'আগে ইমেইল লিখুন।'; return; }
+  try { await B.resetPassword(email); $('aMsg').textContent = '✅ পাসওয়ার্ড রিসেট লিংক ইমেইলে পাঠানো হয়েছে।'; } catch (e) { $('aMsg').textContent = '❌ ' + errMsg(e); }
+};
+$('logout').onclick = () => B.signOut();
+async function onAuth(u) {
+  S.user = u;
+  if (!u) { S.doc = null; $('appView').classList.add('hide'); $('authView').classList.remove('hide'); $('plansPublic').innerHTML = plansHtml(); setAuthMode(false); return; }
+  try {
+    S.doc = await B.ensureUser(u); B.touch(u.uid);
+    S.settings = { ...DEFAULTS, ...(await B.getSettings()) };
+  } catch (e) { toast('লোড করতে সমস্যা: ' + errMsg(e)); }
+  applyBrand();
+  $('authView').classList.add('hide'); $('appView').classList.remove('hide');
+  renderHeader(); showTab('tool');
+}
+
+$('toolsList').onclick = e => {
+  const b = e.target.closest('[data-tinfo]'); if (!b) return; const x = getTools()[+b.dataset.tinfo]; if (!x) return;
+  modal(`<h2>${esc(x.icon || '🧰')} ${esc(x.name)}</h2><div class="pre" style="margin:8px 0">${esc(x.details || x.short || '')}</div><div class="row">${safeUrl(x.url) ? `<a class="bl" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener noreferrer">🔗 টুলটি খুলুন</a>` : ''}<button class="sec sm" id="mX">বন্ধ করুন</button></div>`, () => { $('mX').onclick = closeModal; });
+};
+/* ===================================================================== plan: payment */
+let selPlan = 0;
+function renderPlanPick() {
+  const pl = getPlans(); if (selPlan >= pl.length) selPlan = 0;
+  $('bkNum').textContent = S.settings.bkash;
+  $('planPick').innerHTML = pl.map((p, i) => `<label class="item" style="display:block;cursor:pointer"><div class="row"><input type="radio" name="plsel" value="${i}" ${i === selPlan ? 'checked' : ''}><b>${esc(p.name)}</b><span class="grow"></span><b>${priceHtml(p)}</b></div><div class="meta">${esc(p.days)} দিন${p.features ? ' • ' + esc(p.features) : ''}</div></label>`).join('');
+  updPick();
+}
+function updPick() { const p = getPlans()[selPlan]; $('bkPrice').textContent = '৳' + p.price; $('bkDays').textContent = p.days; }
+$('planPick').onchange = e => { if (e.target.name === 'plsel') { selPlan = +e.target.value; updPick(); } };
+$('copyBk').onclick = async () => { try { await navigator.clipboard.writeText(S.settings.bkash); toast('নম্বর কপি হয়েছে'); } catch (e) { toast(S.settings.bkash); } };
+$('copyPrompt').onclick = async () => { try { await navigator.clipboard.writeText(S.settings.promptTemplate); toast('প্রম্পট কপি হয়েছে'); } catch (e) { toast('সিলেক্ট করে কপি করুন'); } };
+$('pSend').onclick = async () => {
+  const sender = $('pSender').value.trim().replace(/\s+/g, ''), trx = $('pTrx').value.trim().toUpperCase();
+  if (!/^01\d{9}$/.test(sender)) { $('pMsg').textContent = '❌ বিকাশ নম্বর সঠিক নয় (১১ সংখ্যা, 01 দিয়ে শুরু)।'; return; }
+  if (!/^[A-Z0-9]{8,12}$/.test(trx)) { $('pMsg').textContent = '❌ TrxID সঠিক নয় (৮–১২ অক্ষর/সংখ্যা)।'; return; }
+  $('pSend').disabled = true; $('pMsg').textContent = '⏳ পাঠানো হচ্ছে...';
+  try { const pl = getPlans()[selPlan]; await B.createPayment({ uid: S.user.uid, email: S.user.email, trxId: trx, sender, planName: pl.name, price: +pl.price, days: +pl.days }); $('pMsg').textContent = '✅ অনুরোধ জমা হয়েছে। যাচাই হলে আপনার অ্যাকাউন্ট Pro হবে।'; $('pTrx').value = ''; loadMyPays(); }
+  catch (e) { $('pMsg').textContent = '❌ ' + errMsg(e); }
+  $('pSend').disabled = false;
+};
+
+/* ===================================================================== admin */
+let curAdminTab = 'pays', allUsers = [];
+document.querySelectorAll('[data-at]').forEach(b => b.onclick = () => adminTab(b.dataset.at));
+function adminTab(t) {
+  curAdminTab = t;
+  ['pays', 'users', 'settings'].forEach(k => $('at-' + k).classList.toggle('hide', k !== t));
+  if (t === 'pays') loadPays(); if (t === 'users') loadUsers(); if (t === 'settings') fillSettings();
+}
+async function loadPays() {
+  $('payList').textContent = '⏳';
+  try {
+    const all = (await B.listPayments('all')).sort((a, b) => b.createdAt - a.createdAt), f = $('payFilter').value;
+    const ap = all.filter(p => p.status === 'approved'), pn = all.filter(p => p.status === 'pending');
+    $('paySummary').innerHTML = `⏳ পেন্ডিং: <b>${pn.length}</b> • ✅ মোট সাবস্ক্রিপশন বিক্রি: <b>${ap.length}</b> • আয় ≈ <b>৳${ap.reduce((t, p) => t + (+p.price || +getPlans()[0].price || 0), 0)}</b> <span class="mut">(বর্তমান মূল্য ধরে)</span>`;
+    const ps = f === 'all' ? all : all.filter(p => p.status === f);
+    $('payList').innerHTML = ps.length ? ps.map(p => `<div class="item"><div class="row"><span class="badge b-${p.status}">${p.status}</span><b>${esc(p.trxId)}</b><span class="grow"></span><span class="meta">${fd(p.createdAt)}</span></div>
+      <div class="meta">${esc(p.email)} • বিকাশ: ${esc(p.sender)}${p.planName ? ' • ' + esc(p.planName) + ' ৳' + esc(p.price) + esc(payWarn(p)) : ''}</div>
+      ${p.status === 'pending' ? `<div class="row" style="margin-top:8px"><button class="ok sm" data-ap="${esc(p.id)}" data-u="${esc(p.uid)}" data-d="${esc(p.days || '')}" data-pn="${esc(p.planName || '')}">✔ অনুমোদন (+${payDays(p)} দিন Pro)</button><button class="bad sm" data-rj="${esc(p.id)}">✖ বাতিল</button></div>` : ''}</div>`).join('') : 'কিছু নেই।';
+  } catch (e) { $('payList').textContent = errMsg(e); }
+}
+$('payFilter').onchange = loadPays;
+$('payList').onclick = async e => {
+  const a = e.target.closest('[data-ap]'), r = e.target.closest('[data-rj]');
+  try {
+    if (a) {
+      const u = (await B.getUser(a.dataset.u)) || {}; const start = Math.max(Date.now(), u.plan === 'pro' ? (u.proUntil || 0) : 0);
+      await B.approvePayment(a.dataset.ap, a.dataset.u, start + payDays({ planName: a.dataset.pn, days: a.dataset.d }) * DAY); toast('✅ Pro করা হয়েছে'); loadPays();
+    } else if (r) { await B.rejectPayment(r.dataset.rj); toast('বাতিল করা হয়েছে'); loadPays(); }
+  } catch (err) { toast(errMsg(err)); }
+};
+async function loadUsers() {
+  $('userList').textContent = '⏳';
+  try { allUsers = (await B.listUsers()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); renderUsers(); } catch (e) { $('userList').textContent = errMsg(e); }
+}
+function renderUsers() {
+  const q = $('uSearch').value.trim().toLowerCase(), now = Date.now();
+  const pro = allUsers.filter(u => u.plan === 'pro' && u.proUntil > now).length;
+  $('userStats').textContent = `মোট ${allUsers.length} জন • Pro ${pro} জন • Free ${allUsers.length - pro} জন`;
+  const fl = $('uFilter').value;
+  const list = allUsers.filter(u => (!q || (u.email || '').toLowerCase().includes(q)) && (fl === 'all' || (fl === 'pro') === (u.plan === 'pro' && u.proUntil > now)));
+  $('userList').innerHTML = list.map(u => {
+    const isPro = u.plan === 'pro' && u.proUntil > now;
+    return `<div class="item"><div class="row"><b class="grow" style="word-break:break-all">${esc(u.email)}</b><span class="badge ${isPro ? 'b-pro' : 'b-free'}">${isPro ? 'PRO' : 'FREE'}</span></div>
+    <div class="meta">${esc(u.name || '')} • যোগ: ${fd(u.createdAt)} • শেষ লগইন: ${fd(u.lastLogin)} • ট্রায়াল: ${u.used1080 || 0}${u.plan === 'pro' ? ' • মেয়াদ: ' + fd(u.proUntil) : ''}</div>
+    <div class="row" style="margin-top:8px"><button class="ok sm" data-up="pro" data-id="${esc(u.uid)}">+${esc(getPlans()[0].days)} দিন Pro</button><button class="sec sm" data-up="free" data-id="${esc(u.uid)}">Free করুন</button><button class="sec sm" data-up="reset" data-id="${esc(u.uid)}">কাউন্ট রিসেট</button></div></div>`;
+  }).join('') || 'কেউ নেই।';
+}
+$('uSearch').oninput = renderUsers; $('uFilter').onchange = renderUsers;
+$('userList').onclick = async e => {
+  const b = e.target.closest('[data-up]'); if (!b) return; const id = b.dataset.id, u = allUsers.find(x => x.uid === id), k = b.dataset.up;
+  try {
+    if (k === 'pro') { const start = Math.max(Date.now(), u.plan === 'pro' ? (u.proUntil || 0) : 0); await B.updateUser(id, { plan: 'pro', proUntil: start + (+getPlans()[0].days || 30) * DAY }); }
+    if (k === 'free') await B.updateUser(id, { plan: 'free', proUntil: 0 });
+    if (k === 'reset') await B.updateUser(id, { used1080: 0 });
+    toast('✅ হয়েছে'); await loadUsers();
+    if (id === S.user.uid) { S.doc = await B.getUser(id); renderHeader(); }
+  } catch (err) { toast(errMsg(err)); }
+};
+function renderPlanEd(pl) {
+  $('planEd').innerHTML = pl.map((p, i) => `<div class="item" data-pi><label>প্ল্যানের নাম</label><input class="pn" value="${esc(p.name)}"><div class="grid2"><div><label>আসল দাম (কাটা দাম, ঐচ্ছিক)</label><input class="po" type="number" value="${esc(p.oldPrice || '')}" placeholder="যেমন 299"></div><div><label>ছাড়ের পর দাম (৳)</label><input class="pp" type="number" value="${esc(p.price)}"></div><div><label>কত দিনের</label><input class="pd" type="number" value="${esc(p.days)}"></div></div><label>ফিচার (এক লাইনে)</label><input class="pf" value="${esc(p.features || '')}"><button class="bad sm" data-delplan="${i}" style="margin-top:8px">🗑 এই প্ল্যান মুছুন</button></div>`).join('');
+}
+function readPlanEd() {
+  const r = [...document.querySelectorAll('#planEd [data-pi]')].map(d => ({ name: d.querySelector('.pn').value.trim() || 'Pro', price: +d.querySelector('.pp').value || 0, oldPrice: +d.querySelector('.po').value || 0, days: +d.querySelector('.pd').value || 30, features: d.querySelector('.pf').value.trim() }));
+  return r.length ? r : DEFAULTS.plans;
+}
+$('planEd').onclick = e => { const d = e.target.closest('[data-delplan]'); if (d) { const pl = readPlanEd(); pl.splice(+d.dataset.delplan, 1); renderPlanEd(pl); } };
+$('addPlan').onclick = () => { const pl = readPlanEd(); pl.push({ name: 'নতুন প্ল্যান', price: 199, oldPrice: 0, days: 30, features: '' }); renderPlanEd(pl); };
+function renderToolEd(list) {
+  $('toolEd').innerHTML = list.map((x, i) => `<div class="item" data-ti><div class="grid2"><div><label>আইকন (ইমোজি)</label><input class="ti" value="${esc(x.icon || '🧰')}"></div><div><label>ট্যাগ (যেমন Free/নতুন)</label><input class="tg" value="${esc(x.tag || '')}"></div></div>
+    <label>টুলের নাম</label><input class="tn" value="${esc(x.name || '')}"><label>ছোট বর্ণনা (কার্ডে দেখাবে)</label><input class="ts" value="${esc(x.short || '')}">
+    <label>বিস্তারিত (ক্লিক করলে দেখাবে)</label><textarea class="td" style="font-family:inherit;font-size:14px;min-height:90px">${esc(x.details || '')}</textarea>
+    <label>লিংক (https://...)</label><input class="tu" value="${esc(x.url || '')}" placeholder="https://"><button class="bad sm" data-deltool="${i}" style="margin-top:8px">🗑 মুছুন</button></div>`).join('');
+}
+function readToolEd() {
+  return [...document.querySelectorAll('#toolEd [data-ti]')].map(d => ({ icon: d.querySelector('.ti').value.trim() || '🧰', tag: d.querySelector('.tg').value.trim(), name: d.querySelector('.tn').value.trim(), short: d.querySelector('.ts').value.trim(), details: d.querySelector('.td').value.trim(), url: d.querySelector('.tu').value.trim() })).filter(x => x.name);
+}
+$('toolEd').onclick = e => { const d = e.target.closest('[data-deltool]'); if (d) { const l = readToolEd(); l.splice(+d.dataset.deltool, 1); renderToolEd(l); } };
+$('addTool').onclick = () => { const l = readToolEd(); l.push({ icon: '🧰', name: 'নতুন টুল', short: '', details: '', url: '', tag: '' }); renderToolEd(l); };
+function fillSettings() {
+  const s = S.settings;
+  $('sBrand').value = s.brand; $('sWa').value = s.whatsapp; $('sBkash').value = s.bkash; renderPlanEd(getPlans()); renderToolEd(getTools()); $('sTicker').value = s.ticker || ''; $('sLimit').value = s.free1080Limit;
+  $('sNotice').value = s.notice || ''; $('sGuide').value = s.guide; $('sPrompt').value = s.promptTemplate;
+}
+$('sSave').onclick = async () => {
+  const o = { brand: $('sBrand').value.trim() || DEFAULTS.brand, whatsapp: $('sWa').value.trim(), bkash: $('sBkash').value.trim(), plans: readPlanEd(), tools: readToolEd(), ticker: $('sTicker').value.trim(), free1080Limit: +$('sLimit').value || 0, notice: $('sNotice').value.trim(), guide: $('sGuide').value, promptTemplate: $('sPrompt').value };
+  try { await B.saveSettings(o); S.settings = { ...S.settings, ...o }; applyBrand(); renderHeader(); renderPlanPick(); $('sMsg').textContent = '✅ সেভ হয়েছে'; } catch (e) { $('sMsg').textContent = '❌ ' + errMsg(e); }
+};
+
+/* ---------- Resource inlining (images, fonts, stylesheets from the web) ---------- */
+async function toDataUrl(url) {
+  const r = await fetch(url); if (!r.ok) throw new Error(r.status);
+  const b = await r.blob();
+  return new Promise(res => { const f = new FileReader(); f.onload = () => res(f.result); f.readAsDataURL(b); });
+}
+async function inlineCssUrls(css, baseUrl, warn) {
+  const re = /url\(\s*(['"]?)([^)'"]+)\1\s*\)/g; const jobs = [];
+  css.replace(re, (m, q, u) => { if (!/^data:|^#/.test(u)) jobs.push(u); return m; });
+  const map = {};
+  await Promise.all([...new Set(jobs)].map(async u => {
+    try { map[u] = await toDataUrl(new URL(u, baseUrl).href); } catch (e) { warn.push(u); }
+  }));
+  return css.replace(re, (m, q, u) => map[u] ? `url("${map[u]}")` : m);
+}
+async function prepareHtml(src) {
+  const warn = [];
+  const d = new DOMParser().parseFromString(src, 'text/html');
+  for (const l of [...d.querySelectorAll('link[rel~="stylesheet"][href]')]) {
+    const href = l.getAttribute('href'); if (!/^https?:/.test(href)) continue;
+    try {
+      const r = await fetch(href); const css = await inlineCssUrls(await r.text(), href, warn);
+      const s = d.createElement('style'); s.textContent = css; l.replaceWith(s);
+    } catch (e) { warn.push(href); }
+  }
+  for (const s of [...d.querySelectorAll('style')]) s.textContent = await inlineCssUrls(s.textContent, location.href, warn);
+  for (const im of [...d.querySelectorAll('img[src]')]) {
+    const u = im.getAttribute('src'); if (!/^https?:/.test(u)) continue;
+    try { im.setAttribute('src', await toDataUrl(u)); } catch (e) { warn.push(u); }
+  }
+  const clk = d.createElement('script'); clk.textContent = VCLOCK; d.head.prepend(clk);
+  return { html: '<!DOCTYPE html>' + d.documentElement.outerHTML, warn };
+}
+
+
+
+/* ===================================================================== TOOL (photo) */
+const FORMATS = [['1280,720', 'ল্যান্ডস্কেপ 720p'], ['720,1280', 'ভার্টিকাল 720p'], ['1920,1080', 'ল্যান্ডস্কেপ Full HD 1080p'], ['1080,1920', 'ভার্টিকাল Full HD'], ['1080,1080', 'স্কয়ার 1080'],
+  ['2560,1440', 'ল্যান্ডস্কেপ 1440p'], ['3840,2160', 'ল্যান্ডস্কেপ 4K 3840×2160'], ['2160,3840', 'ভার্টিকাল 4K 2160×3840'], ['3840,3840', 'স্কয়ার 4K 3840×3840'], ['5120,2880', '5K 5120×2880'], ['7680,4320', '8K 7680×4320 (শক্তিশালী ডিভাইস)']];
+$('fmt').innerHTML = FORMATS.map(([v, l]) => `<option value="${v}" data-label="${l}">${l}</option>`).join('');
+$('fmt').value = '3840,2160';
+const rndName = () => String(Math.floor(Math.random() * 9e9) + 1e9) + String(Date.now() % 1e5).padStart(5, '0');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const setStatus = s => { $('st').textContent = s; };
+
+/* ---------- colour helpers ---------- */
+const h2r = h => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
+const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+const mix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+function hsl2rgb(h, s, l) { h = ((h % 360) + 360) % 360; s /= 100; l /= 100; const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return [f(0) * 255, f(8) * 255, f(4) * 255]; }
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function randPal(r) { const h = r() * 360; return [hsl2rgb(h + 210, 45, 6 + r() * 8), hsl2rgb(h, 85, 58), hsl2rgb(h + 45, 85, 62), hsl2rgb(h + 185, 80, 58), hsl2rgb(h + 300, 85, 66)]; }
+
+const PALS = {
+  neon: ['নিয়ন নাইট', '#0a0614', '#ff2d95', '#00e5ff', '#7a3cff', '#ffe14d'],
+  aurora: ['অরোরা', '#050b1a', '#2bffb0', '#2f7bff', '#a24bff', '#00e1ff'],
+  sunset: ['সানসেট', '#1a0b2e', '#ff5e62', '#ff9966', '#ffd36e', '#8a2be2'],
+  ocean: ['ওশান', '#04141f', '#0aa8c4', '#1de9b6', '#2979ff', '#b3f5ff'],
+  forest: ['ফরেস্ট', '#07130d', '#1fa35c', '#9be564', '#0e5c3b', '#e8ffb0'],
+  candy: ['ক্যান্ডি (হালকা)', '#fff4f8', '#ff8fc7', '#8fd3ff', '#ffe08f', '#b8a2ff'],
+  royal: ['রয়্যাল', '#0c0a24', '#5b3df5', '#c04dff', '#ffcf5c', '#2fd5ff'],
+  mono: ['মনোক্রোম', '#0b0b0c', '#3a3a40', '#8c8c96', '#d9d9e0', '#ffffff'],
+  peach: ['পিচ ক্রিম (হালকা)', '#fff1e6', '#ffb38a', '#ff7a8a', '#ffd9a8', '#c9a7ff'],
+  cyber: ['সাইবারপাংক', '#0b0420', '#ff0090', '#00f0ff', '#fcee0a', '#7d00ff']
+};
+const STYLE_NAMES = { mesh: 'মেশ গ্রেডিয়েন্ট', aurora: 'অরোরা', neon: 'নিয়ন গ্লো', bokeh: 'বোকে', waves: 'ওয়েভ', lowpoly: 'লো-পলি', geometric: 'জিওমেট্রিক', synthwave: 'সিনথওয়েভ' };
+
+/* ---------- drawing helpers ---------- */
+function layer(ctx, W, H, blur, fn, comp) {
+  const t = mk(W, H), g = t.getContext('2d'); fn(g);
+  ctx.save(); if (comp) ctx.globalCompositeOperation = comp; if (blur > 0.5) ctx.filter = `blur(${blur}px)`; ctx.drawImage(t, 0, 0); ctx.restore();
+}
+function grain(ctx, W, H, amt, r) {
+  if (amt <= 0) return;
+  const T = 256, t = mk(T, T), tc = t.getContext('2d'), id = tc.createImageData(T, T);
+  for (let i = 0; i < id.data.length; i += 4) { const v = Math.max(0, Math.min(255, 128 + (r() + r() - 1) * 220)) | 0; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
+  tc.putImageData(id, 0, 0);
+  const pat = ctx.createPattern(t, 'repeat');
+  ctx.save(); ctx.fillStyle = pat;
+  ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = Math.min(1, amt / 100 * 0.45); ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = amt / 100 * 0.05; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+
+const STYLES = {
+  mesh(ctx, W, H, r, pal, P, S, M, b) {
+    ctx.fillStyle = rgba(pal[0], 1); ctx.fillRect(0, 0, W, H);
+    const n = 3 + Math.round(P.den * 1.3);
+    layer(ctx, W, H, 0, g => {
+      for (let i = 0; i < n; i++) {
+        const x = r() * W, y = r() * H, rad = (0.28 + r() * 0.42) * M * (0.8 + P.blur / 100 * 0.7), c = pal[1 + (r() * 4 | 0)];
+        const gr = g.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, rgba(c, .95)); gr.addColorStop(.55, rgba(c, .35)); gr.addColorStop(1, rgba(c, 0));
+        g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      }
+    });
+    const gr = ctx.createLinearGradient(0, 0, W, H); gr.addColorStop(0, 'rgba(255,255,255,.06)'); gr.addColorStop(1, 'rgba(0,0,0,.18)'); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+  },
+  aurora(ctx, W, H, r, pal, P, S, M, b) {
+    const gr = ctx.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, rgba(pal[0], 1)); gr.addColorStop(1, rgba(mix(pal[0], pal[2], .28), 1)); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+    const ns = 90 + P.den * 25;
+    for (let i = 0; i < ns; i++) { const x = r() * W, y = r() * H * 0.75, s = (0.4 + r() * 1.4) * S * 0.0016; ctx.fillStyle = rgba([255, 255, 255], 0.15 + r() * 0.7); ctx.beginPath(); ctx.arc(x, y, s, 0, 6.283); ctx.fill(); }
+    const n = 2 + Math.round(P.den * 0.5), rib = [];
+    for (let i = 0; i < n; i++) rib.push({ c: pal[1 + (i % 4)], base: H * (0.22 + r() * 0.38), amp: H * (0.04 + r() * 0.1), f: 0.8 + r() * 1.8, ph: r() * 6.283, th: H * (0.2 + r() * 0.25) });
+    const draw = g => {
+      g.globalCompositeOperation = 'lighter';
+      rib.forEach(o => {
+        const steps = 140, ys = []; g.beginPath();
+        for (let k = 0; k <= steps; k++) { const x = W * k / steps, u = k / steps * 6.283; const y = o.base + Math.sin(u * o.f + o.ph) * o.amp + Math.sin(u * o.f * 2.7 + o.ph * 2) * o.amp * 0.4; ys.push(y); k ? g.lineTo(x, y) : g.moveTo(x, y); }
+        for (let k = steps; k >= 0; k--) g.lineTo(W * k / steps, ys[k] + o.th);
+        g.closePath();
+        const lg = g.createLinearGradient(0, o.base - o.amp, 0, o.base + o.amp + o.th); lg.addColorStop(0, rgba(o.c, 0)); lg.addColorStop(.18, rgba(o.c, .65)); lg.addColorStop(.55, rgba(o.c, .18)); lg.addColorStop(1, rgba(o.c, 0));
+        g.fillStyle = lg; g.fill();
+      });
+    };
+    layer(ctx, W, H, b * 0.6 + M * 0.006, draw, 'lighter');
+    ctx.globalAlpha = 0.45; layer(ctx, W, H, b * 0.15 + M * 0.0015, draw, 'lighter'); ctx.globalAlpha = 1;
+  },
+  neon(ctx, W, H, r, pal, P, S, M, b) {
+    const gr = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, M * 0.75); gr.addColorStop(0, rgba(mix(pal[0], pal[2], .18), 1)); gr.addColorStop(1, rgba(pal[0], 1)); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+    const n = 3 + Math.round(P.den * 1.1), shapes = [];
+    for (let i = 0; i < n; i++) shapes.push({ t: r() * 5 | 0, c: pal[1 + (r() * 4 | 0)], x: r() * W, y: r() * H, s: S * (0.12 + r() * 0.35), rot: r() * 6.283, q: r() });
+    const lw = S * 0.0055;
+    const path = (g, o) => {
+      g.beginPath();
+      if (o.t === 0) g.arc(o.x, o.y, o.s, 0, 6.283);
+      else if (o.t === 1) g.arc(o.x, o.y, o.s, o.rot, o.rot + 2 + o.q * 3.5);
+      else if (o.t === 2) { g.moveTo(o.x + Math.cos(o.rot) * o.s, o.y + Math.sin(o.rot) * o.s); for (let j = 1; j <= 2; j++) g.lineTo(o.x + Math.cos(o.rot + j * 2.0944) * o.s, o.y + Math.sin(o.rot + j * 2.0944) * o.s); g.closePath(); }
+      else if (o.t === 3) { g.moveTo(o.x - o.s, o.y); g.bezierCurveTo(o.x - o.s * 0.3, o.y - o.s * (0.8 + o.q), o.x + o.s * 0.3, o.y + o.s * (0.8 + o.q), o.x + o.s, o.y); }
+      else { const k = o.s * 0.8; g.rect(o.x - k / 2, o.y - k / 2, k, k * (0.5 + o.q * 0.6)); }
+    };
+    const paint = (g, w) => {
+      g.lineCap = 'round'; g.lineJoin = 'round';
+      shapes.forEach(o => {
+        [[w * 6, .10], [w * 3, .2], [w * 1.5, .55]].forEach(([lwid, a]) => { g.lineWidth = lwid; g.strokeStyle = rgba(o.c, a); path(g, o); g.stroke(); });
+        g.lineWidth = w * 0.6; g.strokeStyle = rgba(mix(o.c, [255, 255, 255], .75), 1); path(g, o); g.stroke();
+      });
+    };
+    layer(ctx, W, H, b * 0.9 + S * 0.012, g => { g.globalCompositeOperation = 'lighter'; paint(g, lw * 2); }, 'lighter');
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; paint(ctx, lw); ctx.restore();
+  },
+  bokeh(ctx, W, H, r, pal, P, S, M, b) {
+    const gr = ctx.createLinearGradient(0, 0, W, H); gr.addColorStop(0, rgba(pal[0], 1)); gr.addColorStop(1, rgba(mix(pal[0], pal[2], .35), 1)); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+    const n = 22 + P.den * 12, cs = [];
+    for (let i = 0; i < n; i++) cs.push({ x: r() * W, y: r() * H, rad: S * (0.018 + Math.pow(r(), 2.2) * 0.12), c: pal[1 + (r() * 4 | 0)] });
+    layer(ctx, W, H, b * 0.35, g => {
+      g.globalCompositeOperation = 'lighter';
+      cs.forEach(o => { const rg = g.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.rad); rg.addColorStop(0, rgba(o.c, .12)); rg.addColorStop(.8, rgba(o.c, .3)); rg.addColorStop(.92, rgba(o.c, .6)); rg.addColorStop(1, rgba(o.c, 0)); g.fillStyle = rg; g.beginPath(); g.arc(o.x, o.y, o.rad, 0, 6.283); g.fill(); });
+    }, 'lighter');
+  },
+  waves(ctx, W, H, r, pal, P, S, M, b) {
+    const gr = ctx.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, rgba(pal[0], 1)); gr.addColorStop(1, rgba(mix(pal[0], pal[2], .4), 1)); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+    const n = 3 + Math.round(P.den * 0.7);
+    for (let i = 0; i < n; i++) {
+      const t = i / ((n - 1) || 1), y0 = H * (0.2 + 0.62 * t), amp = H * (0.025 + r() * 0.06), f = 0.6 + r() * 1.6, ph = r() * 6.283, c = pal[1 + (i % 4)], pts = [];
+      for (let k = 0; k <= 160; k++) { const u = k / 160 * 6.283; pts.push([W * k / 160, y0 + Math.sin(u * f + ph) * amp + Math.sin(u * f * 2.3 + ph * 1.7) * amp * 0.35]); }
+      ctx.beginPath(); ctx.moveTo(0, H); pts.forEach(p => ctx.lineTo(p[0], p[1])); ctx.lineTo(W, H); ctx.closePath();
+      const lg = ctx.createLinearGradient(0, y0 - amp, 0, H); lg.addColorStop(0, rgba(mix(c, [255, 255, 255], .1), .92)); lg.addColorStop(1, rgba(mix(c, pal[0], .7), .96)); ctx.fillStyle = lg; ctx.fill();
+      ctx.beginPath(); pts.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.lineWidth = S * 0.002; ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.stroke();
+    }
+    if (b > 2) { ctx.save(); ctx.filter = `blur(${b * 0.25}px)`; ctx.globalAlpha = .35; ctx.drawImage(ctx.canvas, 0, 0); ctx.restore(); }
+  },
+  lowpoly(ctx, W, H, r, pal, P, S, M, b) {
+    ctx.fillStyle = rgba(pal[0], 1); ctx.fillRect(0, 0, W, H);
+    const cols = 4 + P.den * 2, cw = W / cols, rows = Math.ceil(H / cw), ch = H / rows, pts = [];
+    for (let j = 0; j <= rows; j++) { pts[j] = []; for (let i = 0; i <= cols; i++) { let x = i * cw, y = j * ch; if (i > 0 && i < cols) x += (r() - .5) * cw * .75; if (j > 0 && j < rows) y += (r() - .5) * ch * .75; pts[j][i] = [x, y]; } }
+    const ramp = [pal[0], pal[1], pal[2], pal[3], pal[4]];
+    const col = t => { t = Math.max(0, Math.min(.999, t)) * (ramp.length - 1); const i = t | 0; return mix(ramp[i], ramp[i + 1], t - i); };
+    const tri = (a, b2, c) => {
+      const cx = (a[0] + b2[0] + c[0]) / 3, cy = (a[1] + b2[1] + c[1]) / 3; let cc = col(cx / W * 0.55 + cy / H * 0.45); const sh = (r() - .5) * 0.28;
+      cc = sh > 0 ? mix(cc, [255, 255, 255], sh) : mix(cc, [0, 0, 0], -sh);
+      ctx.fillStyle = ctx.strokeStyle = rgba(cc, 1); ctx.lineWidth = S * 0.0012 + 0.6;
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b2[0], b2[1]); ctx.lineTo(c[0], c[1]); ctx.closePath(); ctx.fill(); ctx.stroke();
+    };
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const p00 = pts[j][i], p10 = pts[j][i + 1], p01 = pts[j + 1][i], p11 = pts[j + 1][i + 1];
+      if (r() < .5) { tri(p00, p10, p11); tri(p00, p11, p01); } else { tri(p00, p10, p01); tri(p10, p11, p01); }
+    }
+    const vg = ctx.createLinearGradient(0, H * 0.4, 0, H); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, rgba(pal[0], .5)); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  },
+  geometric(ctx, W, H, r, pal, P, S, M, b) {
+    ctx.fillStyle = rgba(pal[0], 1); ctx.fillRect(0, 0, W, H);
+    const t = M / (3 + Math.round(P.den * 1.2)), nx = Math.ceil(W / t), ny = Math.ceil(H / t);
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+      const x = i * t, y = j * t, c = pal[1 + (r() * 4 | 0)], c2 = pal[1 + (r() * 4 | 0)], k = r() * 6 | 0, cr = r() * 4 | 0;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, t, t); ctx.clip();
+      ctx.fillStyle = rgba(mix(pal[0], c2, .18), 1); ctx.fillRect(x, y, t, t); ctx.fillStyle = rgba(c, 1);
+      const cx = (cr === 1 || cr === 2) ? x + t : x, cy = cr >= 2 ? y + t : y;
+      if (k === 0) { ctx.beginPath(); ctx.arc(cx, cy, t, 0, 6.283); ctx.fill(); }
+      else if (k === 1) { ctx.beginPath(); ctx.arc(x + t / 2, y + t / 2, t * .42, 0, 6.283); ctx.fill(); }
+      else if (k === 2) { for (let q = 3; q >= 1; q--) { ctx.fillStyle = rgba(q % 2 ? c : c2, 1); ctx.beginPath(); ctx.arc(x + t / 2, y + t / 2, t * q / 6, 0, 6.283); ctx.fill(); } }
+      else if (k === 3) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + t, y + t); ctx.lineTo(x, y + t); ctx.closePath(); ctx.fill(); }
+      else if (k === 4) { ctx.beginPath(); ctx.arc(x + t / 2, y + (r() < .5 ? 0 : t), t / 2, 0, 6.283); ctx.fill(); }
+      else { ctx.fillRect(x + t * .15, y + t * .15, t * .7, t * .7 * (.4 + r() * .6)); }
+      ctx.restore();
+    }
+  },
+  synthwave(ctx, W, H, r, pal, P, S, M, b) {
+    const hz = H * 0.62;
+    let gr = ctx.createLinearGradient(0, 0, 0, hz); gr.addColorStop(0, rgba(pal[0], 1)); gr.addColorStop(.7, rgba(mix(pal[0], pal[1], .45), 1)); gr.addColorStop(1, rgba(mix(pal[1], pal[4], .4), 1)); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, hz);
+    const ns = 60 + P.den * 14; for (let i = 0; i < ns; i++) { ctx.fillStyle = rgba([255, 255, 255], .2 + r() * .7); ctx.beginPath(); ctx.arc(r() * W, r() * hz * .55, (0.4 + r() * 1.2) * S * 0.0016, 0, 6.283); ctx.fill(); }
+    const sr = S * 0.27, sx = W / 2, sy = hz - sr * 0.35, t = mk(W, H), g = t.getContext('2d');
+    const g2 = g.createLinearGradient(0, sy - sr, 0, sy + sr); g2.addColorStop(0, rgba(pal[4], 1)); g2.addColorStop(1, rgba(pal[2], 1)); g.fillStyle = g2; g.beginPath(); g.arc(sx, sy, sr, 0, 6.283); g.fill();
+    g.globalCompositeOperation = 'destination-out'; for (let k = 0; k < 9; k++) g.fillRect(sx - sr, sy + sr * (-0.1 + k * 0.13), sr * 2, sr * 0.012 * (1 + k * 0.9));
+    ctx.save(); ctx.filter = `blur(${S * 0.03 + b * 0.5}px)`; ctx.globalAlpha = .55; ctx.drawImage(t, 0, 0); ctx.restore(); ctx.drawImage(t, 0, 0);
+    gr = ctx.createLinearGradient(0, hz, 0, H); gr.addColorStop(0, rgba(mix(pal[0], pal[1], .35), 1)); gr.addColorStop(1, rgba(pal[0], 1)); ctx.fillStyle = gr; ctx.fillRect(0, hz, W, H - hz);
+    const nh = 8 + P.den;
+    const grid = (g3, lw) => {
+      g3.lineWidth = lw;
+      for (let k = -36; k <= 36; k++) { g3.beginPath(); g3.moveTo(W / 2 + k * W * 0.006, hz); g3.lineTo(W / 2 + k * W * 0.07, H); g3.stroke(); }
+      for (let k = 1; k <= nh; k++) { const y = hz + (H - hz) * Math.pow(k / nh, 2.3); g3.beginPath(); g3.moveTo(0, y); g3.lineTo(W, y); g3.stroke(); }
+    };
+    layer(ctx, W, H, b * 0.4 + S * 0.004, g3 => { g3.strokeStyle = rgba(pal[2], .9); grid(g3, S * 0.004); }, 'lighter');
+    ctx.save(); ctx.strokeStyle = rgba(mix(pal[2], [255, 255, 255], .5), .85); ctx.globalCompositeOperation = 'lighter'; grid(ctx, S * 0.0016); ctx.restore();
+    const hg = ctx.createRadialGradient(W / 2, hz, 0, W / 2, hz, W * 0.5); hg.addColorStop(0, rgba(pal[1], .5)); hg.addColorStop(1, rgba(pal[1], 0));
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = hg; ctx.fillRect(0, hz - H * 0.12, W, H * 0.24); ctx.restore();
+  }
+};
+
+function render(cv, W, H, P) {
+  const ctx = cv.getContext('2d'), r = mulberry((P.seed | 0) || 1), S = Math.min(W, H), M = Math.max(W, H);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  STYLES[P.style](ctx, W, H, r, P.pal, P, S, M, P.blur / 100 * 0.03 * M);
+  grain(ctx, W, H, P.grain, mulberry(((P.seed | 0) || 1) + 99));
+}
+
+/* ---------- generator UI ---------- */
+$('gStyle').innerHTML = Object.keys(STYLE_NAMES).map(k => `<option value="${k}">${STYLE_NAMES[k]}</option>`).join('');
+$('gPal').innerHTML = Object.keys(PALS).map(k => `<option value="${k}">${PALS[k][0]}</option>`).join('') + '<option value="random">🎲 র‍্যান্ডম রঙ</option><option value="custom">🎨 কাস্টম রঙ</option>';
+$('gStyle').value = 'neon'; $('gPal').value = 'neon';
+function getPal() {
+  const k = $('gPal').value;
+  if (k === 'custom') { const c = [h2r($('c1').value), h2r($('c2').value), h2r($('c3').value)]; return [h2r($('cBg').value), c[0], c[1], c[2], mix(c[0], c[2], .5)]; }
+  if (k === 'random') return randPal(mulberry((+$('gSeed').value || 1) * 7 + 3));
+  return PALS[k].slice(1).map(h2r);
+}
+function params() { return { style: $('gStyle').value, pal: getPal(), den: +$('gDen').value, blur: +$('gBlur').value, grain: +$('gGrain').value, seed: +$('gSeed').value || 1 }; }
+let mode = 'gen', pvT = 0;
+function drawPreview() {
+  ['Den', 'Blur', 'Grain'].forEach(k => { $('v' + k).textContent = $('g' + k).value; });
+  $('cust').classList.toggle('hide', $('gPal').value !== 'custom');
+  const { W, H } = fmt(), cv = $('gv'), pw = 800, ph = Math.max(100, Math.round(pw * H / W));
+  cv.width = pw; cv.height = ph;
+  try { render(cv, pw, ph, params()); } catch (e) { setStatus('প্রিভিউ ত্রুটি: ' + e.message); }
+}
+const schedule = () => { clearTimeout(pvT); pvT = setTimeout(drawPreview, 90); };
+['gStyle', 'gPal', 'gDen', 'gBlur', 'gGrain', 'gSeed', 'cBg', 'c1', 'c2', 'c3'].forEach(id => { $(id).addEventListener('input', schedule); $(id).addEventListener('change', schedule); });
+$('dice').onclick = () => {
+  const sk = Object.keys(STYLE_NAMES), pk = Object.keys(PALS);
+  $('gStyle').value = sk[Math.random() * sk.length | 0]; $('gPal').value = pk[Math.random() * pk.length | 0];
+  $('gSeed').value = 1 + (Math.random() * 99999 | 0); $('gDen').value = 3 + (Math.random() * 6 | 0); drawPreview();
+};
+
+/* ---------- HTML → image mode ---------- */
+const SAMPLE = `<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 25% 30%,#ff4f8b 0,transparent 50%),radial-gradient(circle at 78% 72%,#ffa03d 0,transparent 48%),#150a20}
+.c{position:absolute;border-radius:50%}
+</style></head><body><script>
+for(let i=0;i<26;i++){const d=document.createElement('div');d.className='c';const s=40+Math.random()*220;
+d.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;background:rgba('+(180+Math.random()*75|0)+','+(80+Math.random()*120|0)+','+(120+Math.random()*135|0)+','+(0.08+Math.random()*0.22)+')';document.body.appendChild(d);}
+<\/script></body></html>`;
+$('src').value = SAMPLE;
+$('sample').onclick = () => { $('src').value = SAMPLE; loadPreview(); };
+$('clear').onclick = () => { $('src').value = ''; };
+$('upl').onclick = () => $('file').click();
+$('file').onchange = async e => { const f = e.target.files[0]; if (f) { $('src').value = await f.text(); loadPreview(); } };
+function fmt() { const [W, H] = $('fmt').value.split(',').map(Number); const k = 1080 / Math.min(W, H); return { W, H, lw: Math.round(W * k), lh: Math.round(H * k) }; }
+const pv = $('pv'), stage = $('stage');
+let prepared = null, busy = false;
+function layoutPreview() {
+  const { lw, lh } = fmt(), host = stage.parentElement;
+  if (!host.clientWidth) return;
+  const maxW = Math.min(host.clientWidth - 16, innerHeight * 0.55 * lw / lh);
+  stage.style.width = maxW + 'px'; stage.style.height = (maxW * lh / lw) + 'px';
+  pv.style.width = lw + 'px'; pv.style.height = lh + 'px'; pv.style.transform = `scale(${maxW / lw})`;
+}
+function toolShown() { mode === 'gen' ? drawPreview() : layoutPreview(); }
+addEventListener('resize', () => { if (mode === 'html') layoutPreview(); });
+$('fmt').onchange = () => { mode === 'gen' ? drawPreview() : layoutPreview(); };
+function applyTime() { try { pv.contentWindow.__vcAdvance((+$('tsec').value || 0) * 1000); } catch (e) {} }
+$('tsec').addEventListener('input', applyTime); $('hGrain').addEventListener('input', () => { $('vHg').textContent = $('hGrain').value; });
+async function loadPreview() {
+  if (busy) return;
+  setStatus('⏳ রিসোর্স প্রস্তুত হচ্ছে...');
+  const { html, warn } = await prepareHtml($('src').value);
+  prepared = html; layoutPreview();
+  await new Promise(r => { pv.onload = r; pv.srcdoc = html; });
+  try { pv.contentWindow.__vcAdvance(0); } catch (e) {}
+  await sleep(250); applyTime();
+  setStatus(warn.length ? `⚠ ${warn.length}টি বাইরের ফাইল লোড হয়নি। AI-কে বলুন সব ইনলাইন করতে।` : '✅ প্রিভিউ তৈরি। ঠিক থাকলে "ছবি তৈরি করুন" চাপুন।');
+}
+$('load').onclick = loadPreview;
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  $('m-gen').classList.toggle('hide', m !== 'gen'); $('m-html').classList.toggle('hide', m !== 'html');
+  if (m === 'gen') drawPreview(); else { layoutPreview(); if (!prepared) loadPreview(); }
+}
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+/* ---------- Frame capture: live DOM → SVG foreignObject → canvas ---------- */
+async function capture(doc, win, ctx, W, H, lw, lh) {
+  const live = [...doc.documentElement.querySelectorAll('*')];
+  const root = doc.documentElement.cloneNode(true);
+  const cl = [...root.querySelectorAll('*')];
+  const targets = new Set();
+  const animProps = new Map();   // element -> animated CSS properties (only these need freezing)
+  doc.getAnimations().forEach(a => {
+    const e = a.effect; if (!e || !e.target || e.pseudoElement) return;
+    targets.add(e.target);
+    let m = animProps.get(e.target); if (!m) { m = new Set(); animProps.set(e.target, m); }
+    try { e.getKeyframes().forEach(k => Object.keys(k).forEach(p => { if (!['offset', 'easing', 'composite', 'computedOffset', 'cssFloat'].includes(p)) m.add(p); })); } catch (err) {}
+  });
+  const swaps = [];
+  for (let i = 0; i < live.length; i++) {
+    const el = live[i], c = cl[i];
+    if (el.tagName === 'CANVAS') {
+      let url; try { url = el.toDataURL('image/png'); } catch (e) { continue; }
+      const im = doc.createElement('img'); im.setAttribute('src', url);
+      if (el.id) im.id = el.id; if (el.className) im.className = el.className;
+      im.setAttribute('style', (el.getAttribute('style') || '') + `;width:${el.clientWidth}px;height:${el.clientHeight}px`);
+      swaps.push([c, im]);
+    } else if (targets.has(el)) {
+      const cs = win.getComputedStyle(el);
+      for (const p of animProps.get(el)) { try { c.style[p] = cs[p]; } catch (err) {} }
+      c.style.setProperty('animation', 'none', 'important'); c.style.setProperty('transition', 'none', 'important');
+    }
+  }
+  swaps.forEach(([c, im]) => c.replaceWith(im));
+  root.querySelectorAll('script,noscript').forEach(n => n.remove());
+  root.style.width = lw + 'px'; root.style.height = lh + 'px'; root.style.overflow = 'hidden';
+  const xml = new XMLSerializer().serializeToString(root);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${lw}" height="${lh}"><foreignObject x="0" y="0" width="${lw}" height="${lh}">${xml}</foreignObject></svg>`;
+  const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);   // data: URL keeps the canvas untainted
+  await img.decode();
+  const opaque = c => c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent';
+  const hb = win.getComputedStyle(doc.documentElement).backgroundColor, bb = win.getComputedStyle(doc.body).backgroundColor;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = opaque(hb) ? hb : opaque(bb) ? bb : '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  ctx.drawImage(img, 0, 0, W, H);
+}
+
+
+
+function upgradeModal(why) {
+  modal(`<h2>⭐ Pro দরকার</h2><p>${esc(why)}</p><p class="mut">Pro নিলে 1080p থেকে 8K পর্যন্ত — সবকিছু আনলিমিটেড।</p>
+    <div class="row"><button id="mUp" class="grow">Pro আপগ্রেড করুন</button><button class="sec" id="mX">ঠিক আছে</button></div>`,
+    () => { $('mUp').onclick = () => { closeModal(); showTab('plan'); }; $('mX').onclick = closeModal; });
+}
+
+async function renderHtmlImage(W, H, lw, lh) {
+  setStatus('⏳ রিসোর্স প্রস্তুত হচ্ছে...');
+  const { html } = await prepareHtml($('src').value);
+  const ex = document.createElement('iframe');
+  ex.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+  ex.style.cssText = `position:fixed;left:0;top:0;width:${lw}px;height:${lh}px;border:0;opacity:0.01;pointer-events:none;z-index:-1`;
+  document.body.appendChild(ex);
+  try {
+    await new Promise(r => { ex.onload = r; ex.srcdoc = html; });
+    const win = ex.contentWindow, doc = ex.contentDocument;
+    try { await doc.fonts.ready; } catch (e) {}
+    await sleep(400); win.__vcAdvance(0); await sleep(250); win.__vcAdvance((+$('tsec').value || 0) * 1000); await sleep(150);
+    const cv = mk(W, H); setStatus('⏳ ছবি আঁকা হচ্ছে...');
+    await capture(doc, win, cv.getContext('2d'), W, H, lw, lh);
+    return cv;
+  } finally { ex.remove(); }
+}
+
+/* ---------- Export ---------- */
+let blobUrl = null, blob = null, outName = 'image.jpg';
+$('go').onclick = async () => {
+  if (busy) return;
+  const { W, H, lw, lh } = fmt(), gt = gate(W, H);
+  if (!gt.ok) { upgradeModal(gt.why); return; }
+  busy = true; $('go').disabled = true; $('out').classList.add('hide'); setStatus('⏳ ছবি তৈরি হচ্ছে...');
+  let ok = false;
+  try {
+    await sleep(60);
+    const cv = mode === 'gen' ? (() => { const c = mk(W, H); render(c, W, H, params()); return c; })() : await renderHtmlImage(W, H, lw, lh);
+    if (mode === 'html' && +$('hGrain').value > 0) grain(cv.getContext('2d'), W, H, +$('hGrain').value, mulberry(Date.now() % 99999 + 1));
+    const ext = $('ext').value, type = ext === 'png' ? 'image/png' : 'image/jpeg';
+    const b = await new Promise(res => cv.toBlob(res, type, +$('jq').value || 0.95));
+    if (!b) throw new Error('এই সাইজের ছবি তৈরি করা গেল না (মেমরি কম)। ছোট সাইজ বেছে নিন।');
+    if (blobUrl) URL.revokeObjectURL(blobUrl);
+    blob = b; blobUrl = URL.createObjectURL(b);
+    outName = `${rndName()}.${ext === 'png' ? 'png' : 'jpg'}`;
+    $('outImg').src = blobUrl; $('out').classList.remove('hide');
+    setStatus(`✅ সম্পন্ন! ${W}×${H}, ${(b.size / 1048576).toFixed(1)} MB`);
+    ok = true;
+  } catch (e) { setStatus('ত্রুটি: ' + (e.message || e) + '\n(খুব বড় সাইজে ফোনের মেমরি কম পড়লে একটু ছোট সাইজ বেছে নিন।)'); }
+  if (ok && gt.tier !== 'hd' && effPlan() !== 'pro') {
+    try { S.doc.used1080 = (S.doc.used1080 || 0) + 1; await B.bumpUsage(S.user.uid, S.doc.used1080); renderUsage(); } catch (e) {}
+  }
+  busy = false; $('go').disabled = false;
+};
+$('dl').onclick = () => { const a = document.createElement('a'); a.href = blobUrl; a.download = outName; a.click(); };
+$('share').onclick = async () => {
+  const f = new File([blob], outName, { type: blob.type });
+  if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f] }); } catch (e) {} }
+  else setStatus('শেয়ার সাপোর্ট নেই। "ডাউনলোড" চাপুন, ফাইল Downloads ফোল্ডারে যাবে।');
+};
+
+/* ===================================================================== boot */
+window.__app = { S, gate, tierOf, effPlan, get B() { return B; } };
+(async function boot() {
+  applyBrand();
+  const configured = CONFIG.FIREBASE.apiKey && !/^PASTE/.test(CONFIG.FIREBASE.apiKey);
+  try { B = configured ? await makeFirebase(CONFIG.FIREBASE) : makeDemo(); }
+  catch (e) { B = makeDemo(); toast('Firebase লোড হয়নি, ডেমো মোডে চলছে'); }
+  if (B.mode === 'demo') $('demoBar').classList.remove('hide');
+  try { S.settings = { ...DEFAULTS, ...(await B.getSettings()) }; } catch (e) {}
+  applyBrand();
+  B.onAuth(onAuth);
+})();
+</script>
+</body>
+</html>
